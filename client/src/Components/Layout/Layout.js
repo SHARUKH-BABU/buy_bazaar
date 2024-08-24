@@ -6,7 +6,7 @@ import {Toaster} from "react-hot-toast";
 
 const Layout = ({ children, title, description, keywords, author }) => {
   return (
-    <div className="bg-info bg-opacity-10">
+    <div>
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />

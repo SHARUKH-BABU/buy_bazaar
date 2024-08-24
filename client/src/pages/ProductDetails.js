@@ -51,7 +51,6 @@ const ProductDetails = () => {
   return (
     <Layout title={`Product Details`}>
       <div className="product-details-container">
-        {error && <Alert message={error} type="error" showIcon />}
         {loading ? (
           <div className="text-center"><Spin size="large" /></div>
         ) : (
@@ -86,35 +85,44 @@ const ProductDetails = () => {
                   {relatedProducts.length > 0 ? (
                     relatedProducts.map((product) => (
                       <div key={product._id} className='col-md-3 mb-3'>
-                        <Card
-                          hoverable
-                          cover={
-                            <img
-                              alt={product.name}
-                              src={`/api/v1/product/product-photo/${product._id}`}
-                              className='related-product-image' 
-                              height={200}
-                              width={200}
-                            />
-                          }
-                        >
-                          <Card.Meta
-                            title={product.name}
-                            description={`$${product.price}`}
+                        <div className="card">
+                          <img
+                            alt={product.name}
+                            src={`/api/v1/product/product-photo/${product._id}`}
+                            className='card-img-top' 
+                            height={200}
+                            width={200}
                           />
-                          <Button
-                            type="primary"
-                            className='mt-2'
-                            onClick={() => navigate(`/product/${product.slug}`)}
-                          >
-                            View Details
-                          </Button>
-                        </Card>
+                          <div className="card-body">
+                            <div className="d-flex justify-content-between mb-2">
+                              <div className="d-flex flex-column">
+                                <h4 className="card-title">{product.name}</h4>
+                                <h6 className="text-muted">{product.category?.name}</h6>
+                              </div>
+                              <h4 className="text-success text-end">₹{product.price*8}</h4>
+                            </div>
+                            <Button
+                              onClick={() => navigate(`/product/${product.slug}`)}
+                              aria-label={`View details of ${product.name}`}
+                            >
+                              More Details
+                            </Button>
+                            <Button
+                              className="ms-1"
+                              type="primary"
+                              aria-label={`Add ${product.name} to cart`}
+                            >
+                              ADD TO CART
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))
                   ) : (
                     <Text>No similar products found.</Text>
-                  )}
+                  )
+                }
+
                 </div>
               )}
             </div>

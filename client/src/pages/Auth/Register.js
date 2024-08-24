@@ -12,7 +12,8 @@ const Register = () => {
   const [address, setAddress] = useState("");
   const [answer, setAnswer] = useState("");
   const navigate = useNavigate();
-
+  const audio1 = new Audio('/sounds/success.mp3'); // Updated path to your audio file
+  const audio2 = new Audio('/sounds/error.mp3'); // Updated path to your audio file
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,12 +29,15 @@ const Register = () => {
       if (res && res.data.success) {
         navigate("/login");
         toast.success(res.data.message);
+        audio1.play();
       } else {
         toast.error(res.data.message);
+        audio2.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
+      audio2.play();
     }
   };
 

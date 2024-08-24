@@ -1,19 +1,12 @@
-
-// bg-success p-2 text-white bg-opacity-75
-// bg-info bg-opacity-75
-// bg-warning bg-opacity-75
-// bg-danger bg-opacity-75
-// bg-primary bg-opacity-75
-// bg-secondary bg-opacity-75
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Layout from "../Components/Layout/Layout";
 import axios from "axios";
 import { Checkbox, Radio, Spin, Button } from "antd";
 import Prices from "../Components/Prices";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/cart";
 import toast from "react-hot-toast";
+import useCategory from "../hooks/useCategory";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -24,13 +17,30 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [ cart, setCart ] = useCart();
-
+  const [cart, setCart] = useCart();
+  const Allcategories = useCategory();
+  
   const navigator = useNavigate();
+  const audio = new Audio('/sounds/add_to_cart.mp3'); // Updated path to your audio file
 
   useEffect(() => {
-    getAllCategory();
-    getTotal();
+    const fetchInitialData = async () => {
+      setLoading(true);
+      try {
+        const categoryData = await axios.get("/api/v1/category/get-category");
+        const totalCount = await axios.get("/api/v1/product/product-count");
+        const productData = await axios.get(`/api/v1/product/get-product`);
+        setCategories(categoryData.data?.category);
+        setTotal(totalCount.data?.total);
+        setProducts(productData.data?.products);
+      } catch (error) {
+        toast.error("Error fetching initial data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -50,35 +60,15 @@ const Home = () => {
     loadMore();
   }, [page]);
 
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
   const getAllProducts = async () => {
     setLoading(true);
     try {
       const { data } = await axios.get(`/api/v1/product/get-product`);
       setProducts(data?.products);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      toast.error("Error fetching products");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getTotal = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/product/product-count");
-      setTotal(data?.total);
-    } catch (error) {
-      console.error("Error fetching total count:", error);
     }
   };
 
@@ -88,13 +78,13 @@ const Home = () => {
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
       setProducts((prevProducts) => [...prevProducts, ...data?.products]);
     } catch (error) {
-      console.error("Error loading more products:", error);
+      toast.error("Error loading more products");
     } finally {
       setLoadingMore(false);
     }
   };
 
-  const filterProduct = async () => {
+  const filterProduct = useCallback(async () => {
     try {
       const { data } = await axios.post("/api/v1/product/product-filters", {
         checked,
@@ -102,9 +92,9 @@ const Home = () => {
       });
       setProducts(data?.products);
     } catch (error) {
-      console.error("Error filtering products:", error);
+      toast.error("Error filtering products");
     }
-  };
+  }, [checked, radio]);
 
   const handleFilter = (value, id) => {
     setChecked((prev) =>
@@ -118,22 +108,55 @@ const Home = () => {
     getAllProducts();
   };
 
+  const categoryOptions = useMemo(
+    () =>
+      categories?.map((c) => (
+        <Checkbox
+          key={c._id}
+          onChange={(e) => handleFilter(e.target.checked, c._id)}
+          className="mb-2"
+        >
+          {c.name}
+        </Checkbox>
+      )),
+    [categories]
+  );
+
+  const handleAddToCart = (product) => {
+    setCart([...cart, product]);
+    toast.success("Product added to cart");
+    audio.play(); // Play sound when adding to cart
+  };
+
   return (
     <Layout title={"All Products - Best offers"}>
-      <div className="container-fluid row bg-info bg-opacity-10 p-4">
-      <div className=" bg-info bg-opacity-25 rounded p-3 col-md-3 p-2">
-          <h4 className="text-center mb-4">Filter By Category</h4>
-          <div className="d-flex flex-column">
-            {categories?.map((c) => (
-              <Checkbox
-                key={c._id}
-                onChange={(e) => handleFilter(e.target.checked, c._id)}
-                className="mb-2"
+      <div
+        className="col-12 bg-secondary overflow-x-auto mt-3 bg-opacity-10 d-flex align-items-center w-auto categories-scroll"
+        style={{ height: "120px" }}
+      >
+        <div className="d-flex" style={{ minWidth: "100%" }}>
+          {Allcategories?.map((c, index) => (
+            <div
+              key={c.slug}
+              className="category-link-container"
+              style={{ width: "20%", textAlign: 'center' }}
+            >
+              <Link
+                to={`/category/${c.slug}`}
+                className="p-2 w-100 m-2 text-decoration-none text-secondary"
+                aria-label={`View products in category ${c.name}`}
               >
-                {c.name}
-              </Checkbox>
-            ))}
-          </div>
+                <h4>{c.name}</h4>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="container-fluid row p-4">
+        <div className="rounded p-3 col-md-3 p-2">
+          <h4 className="text-center mb-4">Filter By Category</h4>
+          <div className="d-flex flex-column">{categoryOptions}</div>
           <hr />
           <h4 className="text-center mt-4 mb-4">Filter By Price</h4>
           <div className="d-flex flex-column">
@@ -151,43 +174,48 @@ const Home = () => {
             danger
             onClick={handleResetFilters}
             className="w-100 mb-2 mt-2"
+            aria-label="Reset filters"
           >
             RESET FILTERS
           </Button>
         </div>
 
-
         <div className="col-md-9">
           <h1 className="text-center">All Products</h1>
           {loading ? (
-            <div className="text-center"><Spin /></div>
+            <div className="text-center">
+              <Spin />
+            </div>
           ) : (
             <div className="d-flex flex-wrap">
               {products?.map((p) => (
-                <div className="card m-2" style={{ width: "18rem" }} key={p._id}>
+                <div className="card m-2 p-2" style={{ width: "18rem" }} key={p._id}>
                   <img
                     src={`/api/v1/product/product-photo/${p._id}`}
                     className="card-img-top"
                     height={200}
                     alt={p.name}
+                    aria-label={`Product ${p.name}`}
                   />
                   <div className="card-body">
-                    <h5 className="card-title">{p.name}</h5>
-                    <p className="card-text">
-                      {p.description.substring(0, 30)}...
-                    </p>
-                    <p className="card-text"> $ {p.price}</p>
+                    <div className="d-flex justify-content-between mb-2">
+                      <div className="d-flex flex-column">
+                        <h4 className="card-title">{p.name}</h4>
+                        <h6 className="text-muted">{p.category?.name}</h6>
+                      </div>
+                      <h4 className="text-success text-end">₹{p.price*8}</h4>
+                    </div>
                     <Button
                       onClick={() => navigator(`/product/${p.slug}`)}
+                      aria-label={`View details of ${p.name}`}
                     >
                       More Details
                     </Button>
-                    <Button className="ms-1"
+                    <Button
+                      className="ms-1"
                       type="primary"
-                      onClick={() => {
-                        setCart([...cart, p])
-                        toast.success("Product added to cart");
-                      }}
+                      onClick={() => handleAddToCart(p)}
+                      aria-label={`Add ${p.name} to cart`}
                     >
                       ADD TO CART
                     </Button>
@@ -202,6 +230,7 @@ const Home = () => {
                 type="default"
                 loading={loadingMore}
                 onClick={() => setPage((prev) => prev + 1)}
+                aria-label="Load more products"
               >
                 Load More
               </Button>

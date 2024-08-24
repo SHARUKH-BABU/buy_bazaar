@@ -11,6 +11,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [auth, setAuth] = useAuth();
+  const audio1 = new Audio('/sounds/success.mp3'); // Updated path to your audio file
+  const audio2 = new Audio('/sounds/error.mp3');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,14 +34,17 @@ const Login = () => {
         
         localStorage.setItem("auth", JSON.stringify(res.data));
         
-        await navigate(location.state || "/");
+        navigate(location.state || "/");
         toast.success(res.data && res.data.message);
+        audio1.play();
       } else {
         toast.error(res.data.message);
+        audio2.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
+      audio2.play();
     }
   };
   return (

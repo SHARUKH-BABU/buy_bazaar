@@ -6,16 +6,13 @@
   box-sizing: border-box;
 }
 
-
 /* //navbar css */
 .navbar {
   font-family: "Poppins", sans-serif;
   font-size: 17px;
   line-height: 26px;
   text-transform: uppercase;
-  box-shadow: 0 8px 6px -6px gray;
   --webkit-box-shadow: 0 8px 6px -6px gray;
-  border-bottom: solid gray !important;
 }
 
 .nav-link {
@@ -212,4 +209,12 @@
 
 .card-meta-description {
   color: #666666; /* Lighter color for card description */
+}
+.categories-scroll {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }

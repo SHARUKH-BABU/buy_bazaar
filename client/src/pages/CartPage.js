@@ -15,6 +15,9 @@ const CartPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const audio1 = new Audio('/sounds/order_success.mp3'); // Updated path to your audio file
+  const audio2 = new Audio('/sounds/error.mp3');
+
   //total price
   const totalPrice = () => {
     try {
@@ -70,9 +73,12 @@ const CartPage = () => {
       setCart([]);
       navigate("/dashboard/user/orders");
       toast.success("Payment Completed Successfully ");
+      audio1.play();
     } catch (error) {
       console.log(error);
       setLoading(false);
+      toast.error("Payment Failed ");
+      audio2.play();
     }
   };
   return (
