@@ -202,20 +202,22 @@ const Home = () => {
                       </div>
                       <h4 className="text-success text-end">₹{p.price*8}</h4>
                     </div>
-                    <Button
-                      onClick={() => navigator(`/product/${p.slug}`)}
-                      aria-label={`View details of ${p.name}`}
-                    >
-                      More Details
-                    </Button>
-                    <Button
-                      className="ms-1"
-                      type="primary"
-                      onClick={() => handleAddToCart(p)}
-                      aria-label={`Add ${p.name} to cart`}
-                    >
-                      ADD TO CART
-                    </Button>
+                    <div className="d-flex justify-content-between">
+                      <Button
+                        onClick={() => navigator(`/product/${p.slug}`)}
+                        aria-label={`View details of ${p.name}`}
+                      >
+                        More Details
+                      </Button>
+                      <Button
+                        className="bg-success"
+                        type="primary"
+                        onClick={() => handleAddToCart(p)}
+                        aria-label={`Add ${p.name} to cart`}
+                      >
+                        ADD TO CART
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
