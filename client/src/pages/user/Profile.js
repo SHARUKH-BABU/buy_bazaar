@@ -14,6 +14,9 @@ const Profile = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
+  const audio1 = new Audio("/sounds/success.mp3");
+  const audio2 = new Audio("/sounds/error.mp3");
+
   //get user data
   useEffect(() => {
     const { email, name, phone, address } = auth?.user;
@@ -36,6 +39,7 @@ const Profile = () => {
       });
       if (data?.errro) {
         toast.error(data?.error);
+        audio2.play();
       } else {
         setAuth({ ...auth, user: data?.updatedUser });
         let ls = localStorage.getItem("auth");
@@ -43,10 +47,12 @@ const Profile = () => {
         ls.user = data.updatedUser;
         localStorage.setItem("auth", JSON.stringify(ls));
         toast.success("Profile Updated Successfully");
+        audio1.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
+      audio2.play();
     }
   };
   return (

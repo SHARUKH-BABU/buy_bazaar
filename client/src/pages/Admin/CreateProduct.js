@@ -18,6 +18,9 @@ const CreateProduct = () => {
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
 
+  const audio1 = new Audio("/sounds/success.mp3");
+  const audio2 = new Audio("/sounds/error.mp3");
+
   //get all category
   const getAllCategory = async () => {
     try {
@@ -28,6 +31,7 @@ const CreateProduct = () => {
     } catch (error) {
       console.log(error);
       toast.error("Something wwent wrong in getting catgeory");
+      audio2.play();
     }
   };
 
@@ -52,13 +56,16 @@ const CreateProduct = () => {
       );
       if (data?.success) {
         toast.error(data?.message);
+        audio2.play();
       } else {
         navigate("/dashboard/admin/products");
         toast.success("Product Created Successfully");
+        audio1.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("something went wrong");
+      audio2.play();
     }
   };
 

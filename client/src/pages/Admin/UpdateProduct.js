@@ -20,6 +20,9 @@ const UpdateProduct = () => {
   const [photo, setPhoto] = useState("");
   const [id, setId] = useState("");
 
+  const audio1 = new Audio("/sounds/success.mp3");
+  const audio2 = new Audio("/sounds/error.mp3");
+
   //get single product
   const getSingleProduct = async () => {
     try {
@@ -53,6 +56,7 @@ const UpdateProduct = () => {
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong in getting catgeory");
+      audio2.play();
     }
   };
 
@@ -77,13 +81,16 @@ const UpdateProduct = () => {
       );
       if (data?.success) {
         toast.error(data?.message);
+        audio2.play();
       } else {
           navigate("/dashboard/admin/products");
           toast.success("Product Updated Successfully");
+          audio1.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("something went wrong");
+      audio2.play();
     }
   };
 
@@ -96,10 +103,12 @@ const UpdateProduct = () => {
         `/api/v1/product/delete-product/${id}`
       );
       navigate("/dashboard/admin/products");
-      toast.success("Product DEleted Succfully");
+      toast.success("Product Deleted Succfully");
+      audio1.play();
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
+      audio2.play();
     }
   };
   return (

@@ -131,26 +131,23 @@ const Home = () => {
   return (
     <Layout title={"All Products - Best offers"}>
       <div
-        className="col-12 bg-secondary overflow-x-auto mt-3 bg-opacity-10 d-flex align-items-center w-auto categories-scroll"
+        className="bg-secondary mt-3 bg-opacity-10 d-flex flex-wrap justify-content-around align-items-center h-auto"
         style={{ height: "120px" }}
       >
-        <div className="d-flex" style={{ minWidth: "100%" }}>
-          {Allcategories?.map((c, index) => (
+        {Allcategories?.map((c, index) => (
             <div
               key={c.slug}
-              className="category-link-container"
-              style={{ width: "20%", textAlign: 'center' }}
+              className="category-link-container mw-100 m-2"
             >
               <Link
                 to={`/category/${c.slug}`}
-                className="p-2 w-100 m-2 text-decoration-none text-secondary"
+                className="p-2 text-decoration-none text-secondary"
                 aria-label={`View products in category ${c.name}`}
               >
-                <h4>{c.name}</h4>
+                <h5>{c.name}</h5>
               </Link>
             </div>
-          ))}
-        </div>
+        ))}
       </div>
 
       <div className="container-fluid row p-4">

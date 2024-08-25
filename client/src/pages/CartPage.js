@@ -23,7 +23,7 @@ const CartPage = () => {
     try {
       let total = 0;
       cart?.map((item) => {
-        total = total + item.price;
+        total = total + item.price*8;
       });
       return total.toLocaleString("en-US", {
         style: "currency",
@@ -86,8 +86,8 @@ const CartPage = () => {
       <div className="container ">
         <div className="row">
           <div className="col-md-12">
-            <h1 className="text-center bg-light p-2 mb-1">
-              {`Hello ${auth?.token && auth?.user?.name}`}
+            <h1 className="text-center p-2 mb-1">
+              {`Hello ${auth?.token && auth?.user?.name.toUpperCase()}`}
             </h1>
             <h4 className="text-center">
               {cart?.length
@@ -98,8 +98,8 @@ const CartPage = () => {
             </h4>
           </div>
         </div>
-        <div className="row">
-          <div className="col-md-8">
+        <div className="row gap-4 mt-5">
+          <div className="col-md-7 ">
             {cart?.map((p) => (
               <div className="row mb-2 p-3 card flex-row" key={p._id}>
                 <div className="col-md-4">
@@ -108,13 +108,13 @@ const CartPage = () => {
                     className="card-img-top"
                     alt={p.name}
                     width="100px"
-                    height={"100px"}
+                    height={"200px"}
                   />
                 </div>
                 <div className="col-md-8">
                   <p>{p.name}</p>
                   <p>{p.description.substring(0, 30)}</p>
-                  <p>Price : {p.price}</p>
+                  <p>Price : ₹{p.price * 8}</p>
                   <button
                     className="btn btn-danger"
                     onClick={() => removeCartItem(p._id)}
@@ -125,7 +125,7 @@ const CartPage = () => {
               </div>
             ))}
           </div>
-          <div className="col-md-4 text-center">
+          <div className="col-md-4 text-center ">
             <h2>Cart Summary</h2>
             <p>Total | Checkout | Payment</p>
             <hr />

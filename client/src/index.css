@@ -218,3 +218,6 @@
 .categories-scroll::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Opera */
 }
+.btn:hover {
+  letter-spacing: 0.15rem;
+}

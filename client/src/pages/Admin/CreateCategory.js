@@ -13,6 +13,10 @@ const CreateCategory = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
+
+  const audio1 = new Audio("/sounds/success.mp3");
+  const audio2 = new Audio("/sounds/error.mp3");
+
   //handle Form
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +26,17 @@ const CreateCategory = () => {
       });
       if (data?.success) {
         toast.success(`${name} is created`);
+        audio1.play();
         setName("");
         getAllCategory();
       } else {
         toast.error(data.message);
+        audio2.play();
       }
     } catch (error) {
       console.log(error);
       toast.error("somthing went wrong in input form");
+      audio2.play();
     }
   };
 
@@ -60,15 +67,18 @@ const CreateCategory = () => {
       );
       if (data.success) {
         toast.success(`${updatedName} is updated`);
+        audio1.play();
         setSelected(null);
         setUpdatedName("");
         setVisible(false);
         getAllCategory();
       } else {
         toast.error(data.message);
+        audio2.play();
       }
     } catch (error) {
       toast.error("Somtihing went wrong");
+      audio2.play();
     }
   };
   //delete category
@@ -79,13 +89,15 @@ const CreateCategory = () => {
       );
       if (data.success) {
         toast.success(`${PNAME} is deleted`);
-
+        audio1.play();
         getAllCategory();
       } else {
         toast.error(data.message);
+        audio2.play();
       }
     } catch (error) {
       toast.error("Somtihing went wrong");
+      audio2.play();
     }
   };
 
